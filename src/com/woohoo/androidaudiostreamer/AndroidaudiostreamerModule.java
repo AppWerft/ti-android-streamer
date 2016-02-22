@@ -184,7 +184,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
                 Log.e(LOG, "Error starting stream: " + t);
             }
         } else {
-        Log.e(LOG, "Player was currently playing");
+                Log.e(LOG, "Player was currently playing");
         }
 	}
 
