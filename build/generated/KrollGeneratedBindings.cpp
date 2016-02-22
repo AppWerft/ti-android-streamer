@@ -1,8 +1,8 @@
 /* C++ code produced by gperf version 3.0.3 */
-/* Command-line: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf -L C++ -E -t /private/var/folders/w0/716fh0257xb79k1ny7z9nt_w0000gn/T/trevorfifield/androidaudiostreamer-generated/KrollGeneratedBindings.gperf  */
+/* Command-line: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf -L C++ -E -t /private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/androidaudiostreamer-generated/KrollGeneratedBindings.gperf  */
 /* Computed positions: -k'' */
 
-#line 3 "/private/var/folders/w0/716fh0257xb79k1ny7z9nt_w0000gn/T/trevorfifield/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
+#line 3 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
 
 
 #include <string.h>
@@ -12,7 +12,7 @@
 #include "com.woohoo.androidaudiostreamer.AndroidaudiostreamerModule.h"
 
 
-#line 13 "/private/var/folders/w0/716fh0257xb79k1ny7z9nt_w0000gn/T/trevorfifield/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
+#line 13 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
 struct titanium::bindings::BindEntry;
 /* maximum key range = 1, duplicates = 0 */
 
@@ -52,15 +52,15 @@ AndroidaudiostreamerBindings::lookupGeneratedInit (register const char *str, reg
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""},
-#line 15 "/private/var/folders/w0/716fh0257xb79k1ny7z9nt_w0000gn/T/trevorfifield/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
+#line 15 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
       {"com.woohoo.androidaudiostreamer.AndroidaudiostreamerModule", ::com::woohoo::androidaudiostreamer::AndroidaudiostreamerModule::bindProxy, ::com::woohoo::androidaudiostreamer::AndroidaudiostreamerModule::dispose}
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
-      register int key = hash (str, len);
+      unsigned int key = hash (str, len);
 
-      if (key <= MAX_HASH_VALUE && key >= 0)
+      if (key <= MAX_HASH_VALUE)
         {
           register const char *s = wordlist[key].name;
 
@@ -70,5 +70,5 @@ AndroidaudiostreamerBindings::lookupGeneratedInit (register const char *str, reg
     }
   return 0;
 }
-#line 16 "/private/var/folders/w0/716fh0257xb79k1ny7z9nt_w0000gn/T/trevorfifield/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
+#line 16 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/androidaudiostreamer-generated/KrollGeneratedBindings.gperf"
 

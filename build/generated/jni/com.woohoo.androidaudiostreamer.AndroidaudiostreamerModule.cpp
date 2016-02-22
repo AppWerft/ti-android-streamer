@@ -89,16 +89,16 @@ Handle<FunctionTemplate> AndroidaudiostreamerModule::getProxyTemplate()
 	titanium::ProxyFactory::registerProxyPair(javaClass, *proxyTemplate);
 
 	// Method bindings --------------------------------------------------------
-	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMetaGenre", AndroidaudiostreamerModule::getMetaGenre);
-	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "volume", AndroidaudiostreamerModule::volume);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "play", AndroidaudiostreamerModule::play);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "volume", AndroidaudiostreamerModule::volume);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMetaGenre", AndroidaudiostreamerModule::getMetaGenre);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "stop", AndroidaudiostreamerModule::stop);
-	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "setAllowBackground", AndroidaudiostreamerModule::setAllowBackground);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMaxVolume", AndroidaudiostreamerModule::getMaxVolume);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getCurrentVolume", AndroidaudiostreamerModule::getCurrentVolume);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "setAllowBackground", AndroidaudiostreamerModule::setAllowBackground);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMetaUrl", AndroidaudiostreamerModule::getMetaUrl);
-	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getStatus", AndroidaudiostreamerModule::getStatus);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMetaTitle", AndroidaudiostreamerModule::getMetaTitle);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getStatus", AndroidaudiostreamerModule::getStatus);
 
 	Local<ObjectTemplate> prototypeTemplate = proxyTemplate->PrototypeTemplate();
 	Local<ObjectTemplate> instanceTemplate = proxyTemplate->InstanceTemplate();
@@ -117,9 +117,9 @@ Handle<FunctionTemplate> AndroidaudiostreamerModule::getProxyTemplate()
 }
 
 // Methods --------------------------------------------------------------------
-Handle<Value> AndroidaudiostreamerModule::getMetaGenre(const Arguments& args)
+Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 {
-	LOGD(TAG, "getMetaGenre()");
+	LOGD(TAG, "play()");
 	HandleScope scope;
 
 	JNIEnv *env = titanium::JNIScope::getEnv();
@@ -128,9 +128,9 @@ Handle<Value> AndroidaudiostreamerModule::getMetaGenre(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getMetaGenre", "()Ljava/lang/String;");
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "play", "(Ljava/lang/String;)V");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'getMetaGenre' with signature '()Ljava/lang/String;'";
+			const char *error = "Couldn't find proxy method 'play' with signature '(Ljava/lang/String;)V'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
@@ -138,12 +138,29 @@ Handle<Value> AndroidaudiostreamerModule::getMetaGenre(const Arguments& args)
 
 	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
 
-	jvalue* jArguments = 0;
+	if (args.Length() < 1) {
+		char errorStringBuffer[100];
+		sprintf(errorStringBuffer, "play: Invalid number of arguments. Expected 1 but got %d", args.Length());
+		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
+	}
+
+	jvalue jArguments[1];
+
+
+
+
+	
+	
+	if (!args[0]->IsNull()) {
+		Local<Value> arg_0 = args[0];
+		jArguments[0].l =
+			titanium::TypeConverter::jsValueToJavaString(env, arg_0);
+	} else {
+		jArguments[0].l = NULL;
+	}
 
 	jobject javaProxy = proxy->getJavaObject();
-	jstring jResult = (jstring)env->CallObjectMethodA(javaProxy, methodID, jArguments);
-
-
+	env->CallVoidMethodA(javaProxy, methodID, jArguments);
 
 	if (!JavaObject::useGlobalRefs) {
 		env->DeleteLocalRef(javaProxy);
@@ -151,22 +168,18 @@ Handle<Value> AndroidaudiostreamerModule::getMetaGenre(const Arguments& args)
 
 
 
+				env->DeleteLocalRef(jArguments[0].l);
+
+
 	if (env->ExceptionCheck()) {
-		Handle<Value> jsException = titanium::JSException::fromJavaException();
+		titanium::JSException::fromJavaException();
 		env->ExceptionClear();
-		return jsException;
 	}
 
-	if (jResult == NULL) {
-		return Null();
-	}
-
-	Handle<Value> v8Result = titanium::TypeConverter::javaStringToJsString(env, jResult);
-
-	env->DeleteLocalRef(jResult);
 
 
-	return v8Result;
+
+	return v8::Undefined();
 
 }
 Handle<Value> AndroidaudiostreamerModule::volume(const Arguments& args)
@@ -236,9 +249,9 @@ Handle<Value> AndroidaudiostreamerModule::volume(const Arguments& args)
 	return v8::Undefined();
 
 }
-Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
+Handle<Value> AndroidaudiostreamerModule::getMetaGenre(const Arguments& args)
 {
-	LOGD(TAG, "play()");
+	LOGD(TAG, "getMetaGenre()");
 	HandleScope scope;
 
 	JNIEnv *env = titanium::JNIScope::getEnv();
@@ -247,9 +260,9 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "play", "(Ljava/lang/String;)V");
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getMetaGenre", "()Ljava/lang/String;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'play' with signature '(Ljava/lang/String;)V'";
+			const char *error = "Couldn't find proxy method 'getMetaGenre' with signature '()Ljava/lang/String;'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
@@ -257,29 +270,12 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 
 	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
 
-	if (args.Length() < 1) {
-		char errorStringBuffer[100];
-		sprintf(errorStringBuffer, "play: Invalid number of arguments. Expected 1 but got %d", args.Length());
-		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
-	}
-
-	jvalue jArguments[1];
-
-
-
-
-	
-	
-	if (!args[0]->IsNull()) {
-		Local<Value> arg_0 = args[0];
-		jArguments[0].l =
-			titanium::TypeConverter::jsValueToJavaString(env, arg_0);
-	} else {
-		jArguments[0].l = NULL;
-	}
+	jvalue* jArguments = 0;
 
 	jobject javaProxy = proxy->getJavaObject();
-	env->CallVoidMethodA(javaProxy, methodID, jArguments);
+	jstring jResult = (jstring)env->CallObjectMethodA(javaProxy, methodID, jArguments);
+
+
 
 	if (!JavaObject::useGlobalRefs) {
 		env->DeleteLocalRef(javaProxy);
@@ -287,18 +283,22 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 
 
 
-				env->DeleteLocalRef(jArguments[0].l);
-
-
 	if (env->ExceptionCheck()) {
-		titanium::JSException::fromJavaException();
+		Handle<Value> jsException = titanium::JSException::fromJavaException();
 		env->ExceptionClear();
+		return jsException;
 	}
 
+	if (jResult == NULL) {
+		return Null();
+	}
+
+	Handle<Value> v8Result = titanium::TypeConverter::javaStringToJsString(env, jResult);
+
+	env->DeleteLocalRef(jResult);
 
 
-
-	return v8::Undefined();
+	return v8Result;
 
 }
 Handle<Value> AndroidaudiostreamerModule::stop(const Arguments& args)
@@ -323,73 +323,6 @@ Handle<Value> AndroidaudiostreamerModule::stop(const Arguments& args)
 	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
 
 	jvalue* jArguments = 0;
-
-	jobject javaProxy = proxy->getJavaObject();
-	env->CallVoidMethodA(javaProxy, methodID, jArguments);
-
-	if (!JavaObject::useGlobalRefs) {
-		env->DeleteLocalRef(javaProxy);
-	}
-
-
-
-	if (env->ExceptionCheck()) {
-		titanium::JSException::fromJavaException();
-		env->ExceptionClear();
-	}
-
-
-
-
-	return v8::Undefined();
-
-}
-Handle<Value> AndroidaudiostreamerModule::setAllowBackground(const Arguments& args)
-{
-	LOGD(TAG, "setAllowBackground()");
-	HandleScope scope;
-
-	JNIEnv *env = titanium::JNIScope::getEnv();
-	if (!env) {
-		return titanium::JSException::GetJNIEnvironmentError();
-	}
-	static jmethodID methodID = NULL;
-	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "setAllowBackground", "(Z)V");
-		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'setAllowBackground' with signature '(Z)V'";
-			LOGE(TAG, error);
-				return titanium::JSException::Error(error);
-		}
-	}
-
-	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
-
-	if (args.Length() < 1) {
-		char errorStringBuffer[100];
-		sprintf(errorStringBuffer, "setAllowBackground: Invalid number of arguments. Expected 1 but got %d", args.Length());
-		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
-	}
-
-	jvalue jArguments[1];
-
-
-
-
-	if (!args[0]->IsBoolean() && !args[0]->IsNull()) {
-		const char *error = "Invalid value, expected type Boolean.";
-		LOGE(TAG, error);
-		return titanium::JSException::Error(error);
-	}
-	
-	
-	if (!args[0]->IsNull()) {
-		Local<Boolean> arg_0 = args[0]->ToBoolean();
-		jArguments[0].z =
-			titanium::TypeConverter::jsBooleanToJavaBoolean(env, arg_0);
-	} else {
-		jArguments[0].z = NULL;
-	}
 
 	jobject javaProxy = proxy->getJavaObject();
 	env->CallVoidMethodA(javaProxy, methodID, jArguments);
@@ -507,6 +440,73 @@ Handle<Value> AndroidaudiostreamerModule::getCurrentVolume(const Arguments& args
 	return v8Result;
 
 }
+Handle<Value> AndroidaudiostreamerModule::setAllowBackground(const Arguments& args)
+{
+	LOGD(TAG, "setAllowBackground()");
+	HandleScope scope;
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		return titanium::JSException::GetJNIEnvironmentError();
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "setAllowBackground", "(Z)V");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'setAllowBackground' with signature '(Z)V'";
+			LOGE(TAG, error);
+				return titanium::JSException::Error(error);
+		}
+	}
+
+	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
+
+	if (args.Length() < 1) {
+		char errorStringBuffer[100];
+		sprintf(errorStringBuffer, "setAllowBackground: Invalid number of arguments. Expected 1 but got %d", args.Length());
+		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
+	}
+
+	jvalue jArguments[1];
+
+
+
+
+	if (!args[0]->IsBoolean() && !args[0]->IsNull()) {
+		const char *error = "Invalid value, expected type Boolean.";
+		LOGE(TAG, error);
+		return titanium::JSException::Error(error);
+	}
+	
+	
+	if (!args[0]->IsNull()) {
+		Local<Boolean> arg_0 = args[0]->ToBoolean();
+		jArguments[0].z =
+			titanium::TypeConverter::jsBooleanToJavaBoolean(env, arg_0);
+	} else {
+		jArguments[0].z = NULL;
+	}
+
+	jobject javaProxy = proxy->getJavaObject();
+	env->CallVoidMethodA(javaProxy, methodID, jArguments);
+
+	if (!JavaObject::useGlobalRefs) {
+		env->DeleteLocalRef(javaProxy);
+	}
+
+
+
+	if (env->ExceptionCheck()) {
+		titanium::JSException::fromJavaException();
+		env->ExceptionClear();
+	}
+
+
+
+
+	return v8::Undefined();
+
+}
 Handle<Value> AndroidaudiostreamerModule::getMetaUrl(const Arguments& args)
 {
 	LOGD(TAG, "getMetaUrl()");
@@ -559,9 +559,9 @@ Handle<Value> AndroidaudiostreamerModule::getMetaUrl(const Arguments& args)
 	return v8Result;
 
 }
-Handle<Value> AndroidaudiostreamerModule::getStatus(const Arguments& args)
+Handle<Value> AndroidaudiostreamerModule::getMetaTitle(const Arguments& args)
 {
-	LOGD(TAG, "getStatus()");
+	LOGD(TAG, "getMetaTitle()");
 	HandleScope scope;
 
 	JNIEnv *env = titanium::JNIScope::getEnv();
@@ -570,9 +570,9 @@ Handle<Value> AndroidaudiostreamerModule::getStatus(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getStatus", "()Ljava/lang/String;");
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getMetaTitle", "()Ljava/lang/String;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'getStatus' with signature '()Ljava/lang/String;'";
+			const char *error = "Couldn't find proxy method 'getMetaTitle' with signature '()Ljava/lang/String;'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
@@ -611,9 +611,9 @@ Handle<Value> AndroidaudiostreamerModule::getStatus(const Arguments& args)
 	return v8Result;
 
 }
-Handle<Value> AndroidaudiostreamerModule::getMetaTitle(const Arguments& args)
+Handle<Value> AndroidaudiostreamerModule::getStatus(const Arguments& args)
 {
-	LOGD(TAG, "getMetaTitle()");
+	LOGD(TAG, "getStatus()");
 	HandleScope scope;
 
 	JNIEnv *env = titanium::JNIScope::getEnv();
@@ -622,9 +622,9 @@ Handle<Value> AndroidaudiostreamerModule::getMetaTitle(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getMetaTitle", "()Ljava/lang/String;");
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getStatus", "()Ljava/lang/String;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'getMetaTitle' with signature '()Ljava/lang/String;'";
+			const char *error = "Couldn't find proxy method 'getStatus' with signature '()Ljava/lang/String;'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
