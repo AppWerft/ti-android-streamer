@@ -139,9 +139,9 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 
 	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
 
-	if (args.Length() < 2) {
+	if (args.Length() < 1) {
 		char errorStringBuffer[100];
-		sprintf(errorStringBuffer, "play: Invalid number of arguments. Expected 2 but got %d", args.Length());
+		sprintf(errorStringBuffer, "play: Invalid number of arguments. Expected 1 but got %d", args.Length());
 		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
 	}
 
@@ -161,6 +161,10 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 	}
 
 	
+	if (args.Length() <= 1) {
+		jArguments[1].l = NULL;
+
+	} else {
 	
 	if (!args[1]->IsNull()) {
 		Local<Value> arg_1 = args[1];
@@ -168,6 +172,7 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 			titanium::TypeConverter::jsValueToJavaString(env, arg_1);
 	} else {
 		jArguments[1].l = NULL;
+	}
 	}
 
 	jobject javaProxy = proxy->getJavaObject();

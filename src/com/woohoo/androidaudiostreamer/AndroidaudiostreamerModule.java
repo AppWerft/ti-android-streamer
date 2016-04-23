@@ -112,9 +112,14 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		@Override
 		public void playerAudioTrackCreated(AudioTrack audiotrack) {
 			audioSessionId = audiotrack.getAudioSessionId();
-			// TODO Auto-generated method stub
+			Log.d(LOG,"audiotrack.getAudioSessionId="+audioSessionId);
+			// sending back
+			if (hasListeners("ready")) {
+				KrollDict props = new KrollDict();
+				props.put("audioSessionId", audioSessionId);
+				fireEvent("ready", props);
+			}
 		}
-
 	};
 
 	private static MultiPlayer aacPlayer = null;
@@ -181,7 +186,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void play(String url, String charset) {
+	public void play(String url, @Kroll.argument(optional=true) String charset) {
 		if (charset == null)
 			charset = "UTF-8";
 		if (!isCurrentlyPlaying) {
