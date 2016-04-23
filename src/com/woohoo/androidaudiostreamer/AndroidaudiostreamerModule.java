@@ -22,10 +22,11 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	protected static final String LOG = "AAS";
 	String metaTitle;
 	String metaGenre;
+	int audioSessionId = 0;
 	String metaUrl;
 	static String currentUrl;
+	static String currentCharset;
 	int status;
-
 	boolean allowBackground = false;
 	boolean streamHandlerSet = false;
 	boolean playerStarted;
@@ -40,8 +41,9 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
-			}	
+			}
 		}
 
 		public void playerPCMFeedBuffer(boolean isPlaying, int bufSizeMs,
@@ -53,6 +55,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -63,6 +66,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -75,12 +79,13 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
 
 		public void playerMetadata(final String key, final String value) {
-		
+
 			KrollDict metaProps = new KrollDict();
 
 			if ("StreamTitle".equals(key) || "icy-name".equals(key)
@@ -96,15 +101,17 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			} else {
 				return;
 			}
-			
+
 			if (hasListeners("metadata") && !metaProps.isEmpty()) {
 				metaProps.put("title", metaTitle);
+				metaProps.put("audioSessionid", audioSessionId);
 				fireEvent("metadata", metaProps);
 			}
 		}
 
 		@Override
-		public void playerAudioTrackCreated(AudioTrack arg0) {
+		public void playerAudioTrackCreated(AudioTrack audiotrack) {
+			audioSessionId = audiotrack.getAudioSessionId();
 			// TODO Auto-generated method stub
 		}
 
@@ -134,32 +141,35 @@ public class AndroidaudiostreamerModule extends KrollModule {
 						}
 					});
 		} catch (Throwable t) {
-			Log.w(LOG, "Cannot set the ICY URLStreamHandler - maybe already set ? - " + t);
+			Log.w(LOG,
+					"Cannot set the ICY URLStreamHandler - maybe already set ? - "
+							+ t);
 		}
-		
+
 		PhoneStateListener phoneStateListener = new PhoneStateListener() {
-    		@Override
-    		public void onCallStateChanged(int state, String incomingNumber) {
-        		if (state == TelephonyManager.CALL_STATE_RINGING) {
-        			if (isCurrentlyPlaying) {
-	            		aacPlayer.stop();
-	            	}
-        		} else if (state == TelephonyManager.CALL_STATE_IDLE) {
-	        		if (isCurrentlyPlaying && currentUrl != null) {
-	            		aacPlayer.playAsync(currentUrl);
-	            	}
-        		} else if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
-            		//A call is dialing, active or on hold
-        		}
-        		super.onCallStateChanged(state, incomingNumber);
-    		}
+			@Override
+			public void onCallStateChanged(int state, String incomingNumber) {
+				if (state == TelephonyManager.CALL_STATE_RINGING) {
+					if (isCurrentlyPlaying) {
+						aacPlayer.stop();
+					}
+				} else if (state == TelephonyManager.CALL_STATE_IDLE) {
+					if (isCurrentlyPlaying && currentUrl != null) {
+						aacPlayer.playAsync(currentUrl);
+					}
+				} else if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
+					// A call is dialing, active or on hold
+				}
+				super.onCallStateChanged(state, incomingNumber);
+			}
 		};
-		
-		TelephonyManager mgr = (TelephonyManager) TiApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
+
+		TelephonyManager mgr = (TelephonyManager) TiApplication.getInstance()
+				.getSystemService(Context.TELEPHONY_SERVICE);
 		if (mgr != null) {
-    		mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+			mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 		}
-		
+
 	}
 
 	@Kroll.method
@@ -171,21 +181,26 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void play(String url) {
+	public void play(String url, String charset) {
+		if (charset == null)
+			charset = "UTF-8";
 		if (!isCurrentlyPlaying) {
-            try {
-                if (aacPlayer==null){
-                    aacPlayer = new MultiPlayer(clb);
-                }
-                aacPlayer.playAsync(url);
-                currentUrl = url;
-                isCurrentlyPlaying = true;
-            } catch (Throwable t) {
-                Log.e(LOG, "Error starting stream: " + t);
-            }
-        } else {
-                Log.e(LOG, "Player was currently playing");
-        }
+			try {
+				if (aacPlayer == null) {
+					aacPlayer = new MultiPlayer(clb);
+				}
+				currentUrl = url;
+				currentCharset = charset;
+				aacPlayer.playAsync(url);
+				aacPlayer.setMetadataCharEnc(charset);
+
+				isCurrentlyPlaying = true;
+			} catch (Throwable t) {
+				Log.e(LOG, "Error starting stream: " + t);
+			}
+		} else {
+			Log.e(LOG, "Player was currently playing");
+		}
 	}
 
 	@Kroll.method
@@ -233,11 +248,16 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		allowBackground = allow;
 	}
 
+	@Kroll.method
+	public int getAudioSessionId() {
+		return audioSessionId;
+	}
+
 	@Override
 	public void onPause(Activity activity) {
 		super.onPause(activity);
 		if (aacPlayer != null && !allowBackground) {
-            Log.e(LOG, "on Pause with aac player and background disallowed: ");
+			Log.e(LOG, "on Pause with aac player and background disallowed: ");
 			aacPlayer.stop();
 		}
 	}
@@ -246,9 +266,9 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	public void onResume(Activity activity) {
 		super.onResume(activity);
 		if (aacPlayer != null && !allowBackground) {
-            Log.e(LOG, "on Pause with aac player and background allowed: ");
+			Log.e(LOG, "on Pause with aac player and background allowed: ");
 			aacPlayer.stop();
 		}
 	}
-  
-  }
+
+}

@@ -96,6 +96,7 @@ Handle<FunctionTemplate> AndroidaudiostreamerModule::getProxyTemplate()
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMaxVolume", AndroidaudiostreamerModule::getMaxVolume);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getCurrentVolume", AndroidaudiostreamerModule::getCurrentVolume);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "setAllowBackground", AndroidaudiostreamerModule::setAllowBackground);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getAudioSessionId", AndroidaudiostreamerModule::getAudioSessionId);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMetaUrl", AndroidaudiostreamerModule::getMetaUrl);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getMetaTitle", AndroidaudiostreamerModule::getMetaTitle);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getStatus", AndroidaudiostreamerModule::getStatus);
@@ -128,9 +129,9 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "play", "(Ljava/lang/String;)V");
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "play", "(Ljava/lang/String;Ljava/lang/String;)V");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'play' with signature '(Ljava/lang/String;)V'";
+			const char *error = "Couldn't find proxy method 'play' with signature '(Ljava/lang/String;Ljava/lang/String;)V'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
@@ -138,13 +139,13 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 
 	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
 
-	if (args.Length() < 1) {
+	if (args.Length() < 2) {
 		char errorStringBuffer[100];
-		sprintf(errorStringBuffer, "play: Invalid number of arguments. Expected 1 but got %d", args.Length());
+		sprintf(errorStringBuffer, "play: Invalid number of arguments. Expected 2 but got %d", args.Length());
 		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
 	}
 
-	jvalue jArguments[1];
+	jvalue jArguments[2];
 
 
 
@@ -159,6 +160,16 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 		jArguments[0].l = NULL;
 	}
 
+	
+	
+	if (!args[1]->IsNull()) {
+		Local<Value> arg_1 = args[1];
+		jArguments[1].l =
+			titanium::TypeConverter::jsValueToJavaString(env, arg_1);
+	} else {
+		jArguments[1].l = NULL;
+	}
+
 	jobject javaProxy = proxy->getJavaObject();
 	env->CallVoidMethodA(javaProxy, methodID, jArguments);
 
@@ -169,6 +180,9 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 
 
 				env->DeleteLocalRef(jArguments[0].l);
+
+
+				env->DeleteLocalRef(jArguments[1].l);
 
 
 	if (env->ExceptionCheck()) {
@@ -505,6 +519,54 @@ Handle<Value> AndroidaudiostreamerModule::setAllowBackground(const Arguments& ar
 
 
 	return v8::Undefined();
+
+}
+Handle<Value> AndroidaudiostreamerModule::getAudioSessionId(const Arguments& args)
+{
+	LOGD(TAG, "getAudioSessionId()");
+	HandleScope scope;
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		return titanium::JSException::GetJNIEnvironmentError();
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "getAudioSessionId", "()I");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'getAudioSessionId' with signature '()I'";
+			LOGE(TAG, error);
+				return titanium::JSException::Error(error);
+		}
+	}
+
+	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
+
+	jvalue* jArguments = 0;
+
+	jobject javaProxy = proxy->getJavaObject();
+	jint jResult = (jint)env->CallIntMethodA(javaProxy, methodID, jArguments);
+
+
+
+	if (!JavaObject::useGlobalRefs) {
+		env->DeleteLocalRef(javaProxy);
+	}
+
+
+
+	if (env->ExceptionCheck()) {
+		Handle<Value> jsException = titanium::JSException::fromJavaException();
+		env->ExceptionClear();
+		return jsException;
+	}
+
+
+	Handle<Number> v8Result = titanium::TypeConverter::javaIntToJsNumber(env, jResult);
+
+
+
+	return v8Result;
 
 }
 Handle<Value> AndroidaudiostreamerModule::getMetaUrl(const Arguments& args)
