@@ -13,7 +13,7 @@ Firstly, require the module into the controller
 # Play a stream
 In this example we are using a shoutcast AAC stream.
 
-	streamer.play('http://209.85.88.199:8080'); // this is an AAC stream http://198.144.148.12:9002/
+	streamer.play('http://209.85.88.199:8080','UTF-8'); // this is an AAC stream http://198.144.148.12:9002/
 	
 # Listen to a change in the stream status	
 
@@ -44,6 +44,13 @@ In this example we are using a shoutcast AAC stream.
             Ti.API.log(e.url);
             Ti.API.log(e.genre);
         }); 
+
+# Get audioSessionId (for Visualizer)
+
+streamer.addEventListener('ready', function(e) {
+    Ti.API.log(e.audioSessionId);
+}); 
+
 
 # Stop a stream currently playing
 
