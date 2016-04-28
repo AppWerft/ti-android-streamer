@@ -38,7 +38,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
-				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -52,7 +51,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
-				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -63,7 +61,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
-				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -76,7 +73,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
-				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -101,7 +97,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 
 			if (hasListeners("metadata") && !metaProps.isEmpty()) {
 				metaProps.put("title", metaTitle);
-				metaProps.put("audioSessionid", audioSessionId);
 				fireEvent("metadata", metaProps);
 			}
 		}
