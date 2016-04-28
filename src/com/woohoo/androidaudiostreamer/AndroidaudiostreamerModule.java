@@ -112,7 +112,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		@Override
 		public void playerAudioTrackCreated(AudioTrack audiotrack) {
 			audioSessionId = audiotrack.getAudioSessionId();
-			Log.d(LOG,"audiotrack.getAudioSessionId="+audioSessionId);
+			Log.d(LOG, "audiotrack.getAudioSessionId=" + audioSessionId);
 			// sending back
 			if (hasListeners("ready")) {
 				KrollDict props = new KrollDict();
@@ -186,9 +186,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void play(String url, @Kroll.argument(optional=true) String charset) {
-		if (charset == null)
-			charset = "UTF-8";
+	public void play(String url, @Kroll.argument(optional = true) String charset) {
 		if (!isCurrentlyPlaying) {
 			try {
 				if (aacPlayer == null) {
@@ -197,8 +195,8 @@ public class AndroidaudiostreamerModule extends KrollModule {
 				currentUrl = url;
 				currentCharset = charset;
 				aacPlayer.playAsync(url);
-				aacPlayer.setMetadataCharEnc(charset);
-
+				if (charset != null)
+					aacPlayer.setMetadataCharEnc(charset);
 				isCurrentlyPlaying = true;
 			} catch (Throwable t) {
 				Log.e(LOG, "Error starting stream: " + t);
