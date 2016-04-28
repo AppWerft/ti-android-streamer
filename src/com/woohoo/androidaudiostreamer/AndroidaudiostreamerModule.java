@@ -18,7 +18,6 @@ import com.spoledge.aacdecoder.PlayerCallback;
 
 @Kroll.module(name = "Androidaudiostreamer", id = "com.woohoo.androidaudiostreamer")
 public class AndroidaudiostreamerModule extends KrollModule {
-
 	protected static final String LOG = "AAS";
 	String metaTitle;
 	String metaGenre;
@@ -32,9 +31,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	boolean playerStarted;
 	static boolean isCurrentlyPlaying = false;
 	static boolean classInit = true;
-
 	PlayerCallback clb = new PlayerCallback() {
-
 		public void playerStarted() {
 			status = 1;
 			playerStarted = true;
