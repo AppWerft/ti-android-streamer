@@ -5,7 +5,7 @@ This module can be built and used in a project to support MP3, AAC and AAC+ loca
 
 Below is an outline of the main methods used in the module. A more comprehensive example can be found in <a href="https://github.com/trevorf/ti-android-streamer/blob/master/example/app.js">example/app.js</a>
 
-# Require the Audio Streamer module
+## Require the Audio Streamer module
 Firstly, require the module into the controller 
 
 	var streamer = require('com.woohoo.androidaudiostreamer');
