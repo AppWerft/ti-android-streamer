@@ -33,17 +33,17 @@ streamer.play({
 
         streamer.addEventListener('change', function(e) {
             switch (e.status) {
-            case 0 :
-                status = 'STOPPED';
+            case 0 
+                status = Streamer.STATE_STOPPED;
                 break;
             case 1 :
-                status = 'BUFFERING/CONNECTING';
+                status = Streamer.STATE_BUFFERING;
                 break;
             case 2 :
-                status = 'PLAYING';
+                status = Streamer.STATE_PLAYING;
                 break;
             case 3 :
-                status = 'STREAM CONNECTION ERROR';
+                status = Streamer.STATE_STREAMERROR;
                 break;
             }
 

@@ -34,7 +34,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	@Kroll.constant
 	public static final int STATE_STOPPED = 0;
 	@Kroll.constant
-	public static final int STATE_STARTED = 1;
+	public static final int STATE_BUFFERING = 1;
 	@Kroll.constant
 	public static final int STATE_PLAYING = 2;
 	@Kroll.constant
@@ -89,9 +89,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		}
 
 		public void playerMetadata(final String key, final String value) {
-
 			KrollDict metaProps = new KrollDict();
-
 			if ("StreamTitle".equals(key) || "icy-name".equals(key)
 					|| "icy-description".equals(key)) {
 				metaTitle = value;
