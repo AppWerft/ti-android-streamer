@@ -27,7 +27,6 @@ streamer.play({
     decodeBufferCapacityMs : 700,
     audioBufferCapacityMs :1500
 }); 
-setTimeout(streamer.stop,60000);
 ```
 
 
