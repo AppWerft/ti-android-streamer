@@ -31,16 +31,19 @@ public:
 private:
 	// Methods -----------------------------------------------------------
 	static v8::Handle<v8::Value> play(const v8::Arguments&);
+	static v8::Handle<v8::Value> getDeclaredBitRate(const v8::Arguments&);
+	static v8::Handle<v8::Value> setAllowBackground(const v8::Arguments&);
+	static v8::Handle<v8::Value> setDecodeBufferCapacityMs(const v8::Arguments&);
+	static v8::Handle<v8::Value> getAudioSessionId(const v8::Arguments&);
+	static v8::Handle<v8::Value> getMetaUrl(const v8::Arguments&);
+	static v8::Handle<v8::Value> getMetaTitle(const v8::Arguments&);
+	static v8::Handle<v8::Value> getStatus(const v8::Arguments&);
 	static v8::Handle<v8::Value> volume(const v8::Arguments&);
 	static v8::Handle<v8::Value> getMetaGenre(const v8::Arguments&);
 	static v8::Handle<v8::Value> stop(const v8::Arguments&);
 	static v8::Handle<v8::Value> getMaxVolume(const v8::Arguments&);
 	static v8::Handle<v8::Value> getCurrentVolume(const v8::Arguments&);
-	static v8::Handle<v8::Value> setAllowBackground(const v8::Arguments&);
-	static v8::Handle<v8::Value> getAudioSessionId(const v8::Arguments&);
-	static v8::Handle<v8::Value> getMetaUrl(const v8::Arguments&);
-	static v8::Handle<v8::Value> getMetaTitle(const v8::Arguments&);
-	static v8::Handle<v8::Value> getStatus(const v8::Arguments&);
+	static v8::Handle<v8::Value> setAudioBufferCapacityMs(const v8::Arguments&);
 
 	// Dynamic property accessors ----------------------------------------
 

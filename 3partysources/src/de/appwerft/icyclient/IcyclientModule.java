@@ -1,6 +1,4 @@
-package com.woohoo.androidaudiostreamer;
-
-import java.util.HashMap;
+package de.appwerft.icyclient;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
@@ -16,8 +14,8 @@ import android.util.Log;
 import com.spoledge.aacdecoder.MultiPlayer;
 import com.spoledge.aacdecoder.PlayerCallback;
 
-@Kroll.module(name = "Androidaudiostreamer", id = "com.woohoo.androidaudiostreamer")
-public class AndroidaudiostreamerModule extends KrollModule {
+@Kroll.module(name = "Icyaudiostreamer", id = "de.appwerft.icyclient")
+public class IcyclientModule extends KrollModule {
 	protected static final String LOG = "AAS";
 	String metaTitle;
 	String metaGenre;
@@ -31,39 +29,35 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	boolean playerStarted;
 	static boolean isCurrentlyPlaying = false;
 	static boolean classInit = true;
+
 	@Kroll.constant
 	public static final int STATE_STOPPED = 0;
-	@Kroll.constant
-	public static final int STATE_BUFFERING = 1;
-	@Kroll.constant
+	public static final int STATE_STARTED = 1;
 	public static final int STATE_PLAYING = 2;
-	@Kroll.constant
-	public static final int STATE_STREAMERROR = 3;
+	public static final int STATE_STREAMERERROR = 3;
 
-	public static final String LCAT = "AAC";
-
-	PlayerCallback clb = new PlayerCallback() {
+	PlayerCallback playerCallback = new PlayerCallback() {
 		public void playerStarted() {
-			status = STATE_BUFFERING;
+			status = STATE_STARTED;
 			playerStarted = true;
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
 
 		public void playerPCMFeedBuffer(boolean isPlaying, int bufSizeMs,
 				int bufCapacityMs) {
-			status = STATE_BUFFERING;
+			status = 1;
 			if (isPlaying) {
 				status = STATE_PLAYING;
 			}
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
-				statusProps.put("bufSizeMs", bufSizeMs);
-				statusProps.put("bufCapacityMs", bufCapacityMs);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -74,18 +68,20 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
 
 		public void playerException(Throwable t) {
-			status = STATE_STREAMERROR;
+			status = STATE_STREAMERERROR;
 			if (playerStarted) {
 				playerStopped(0);
 			}
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
+				statusProps.put("audioSessionid", audioSessionId);
 				fireEvent("change", statusProps);
 			}
 		}
@@ -108,6 +104,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 
 			if (hasListeners("metadata") && !metaProps.isEmpty()) {
 				metaProps.put("title", metaTitle);
+				metaProps.put("audioSessionid", audioSessionId);
 				fireEvent("metadata", metaProps);
 			}
 		}
@@ -119,15 +116,17 @@ public class AndroidaudiostreamerModule extends KrollModule {
 				KrollDict props = new KrollDict();
 				props.put("audioSessionId", audioSessionId);
 				fireEvent("ready", props);
-			}
+			} else
+				Log.e(LOG, "cannot fire event =" + audioSessionId);
 		}
 	};
 
 	private static MultiPlayer aacPlayer = null;
+
 	static AudioManager audioManager = (AudioManager) TiApplication
 			.getInstance().getSystemService(Context.AUDIO_SERVICE);
 
-	public AndroidaudiostreamerModule() {
+	public IcyclientModule() {
 		super();
 	}
 
@@ -161,63 +160,38 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Kroll.method
 	public void play(Object args) {
 		String url = null, charset = "UTF-8";
-		int decodeBufferCapacityMs = 700;
-		int audioBufferCapacityMs = 1500;
 		int expectedKBitSecRate = 0; // auto
-		if (args != null) {
-			if (args instanceof HashMap) {
-				Log.d(LCAT, "args are Dict/HashMap");
-				KrollDict dict = null;
-				try {
-					dict = new KrollDict((HashMap<String, Object>) args);
-				} catch (Exception e) {
-					Log.e(LCAT, "Unable to parse args" + args.toString());
-					return;
-				}
-				if (dict.containsKeyAndNotNull("url")) {
-					url = dict.getString("url");
-				}
-				if (dict.containsKeyAndNotNull("charset")) {
-					charset = dict.getString("charset");
-				}
-				if (dict.containsKeyAndNotNull("expectedKBitSecRate")) {
-					expectedKBitSecRate = dict.getInt("expectedKBitSecRate");
-				}
-				if (dict.containsKeyAndNotNull("decodeBufferCapacityMs")) {
-					expectedKBitSecRate = dict.getInt("decodeBufferCapacityMs");
-				}
-				if (dict.containsKeyAndNotNull("audioBufferCapacityMs")) {
-					expectedKBitSecRate = dict.getInt("audioBufferCapacityMs");
-				}
-
-			} else if (args instanceof String) {
-				Log.d(LCAT, "args is String");
-				url = (String) args;
-			} else {
-				Log.d(LCAT, "args either dict or string");
+		if (args instanceof KrollDict) {
+			KrollDict dict = (KrollDict) args;
+			if (dict.containsKeyAndNotNull("url")) {
+				url = dict.getString("url");
 			}
+			if (dict.containsKeyAndNotNull("charset")) {
+				charset = dict.getString("charset");
+			}
+			if (dict.containsKeyAndNotNull("expectedKBitSecRate")) {
+				expectedKBitSecRate = dict.getInt("expectedKBitSecRate");
+			}
+		} else if (args instanceof String) {
+			url = (String) args;
 		}
 		if (!isCurrentlyPlaying) {
 			try {
 				if (aacPlayer == null) {
-					aacPlayer = new MultiPlayer(clb);
+					aacPlayer = new MultiPlayer(playerCallback);
 				}
 				currentUrl = url;
 				currentCharset = charset;
-				aacPlayer.setDecodeBufferCapacityMs(decodeBufferCapacityMs);
-				aacPlayer.setAudioBufferCapacityMs(audioBufferCapacityMs);
 				if (expectedKBitSecRate == 0) {
 					aacPlayer.playAsync(url);
 				} else {
-					aacPlayer.playAsync(url, expectedKBitSecRate);
+					// aacPlayer.playAsync(url, expectedKBitSecRate);
 				}
-				if (charset != null) {
+				if (charset != null)
 					aacPlayer.setMetadataCharEnc(charset);
-				}
 				isCurrentlyPlaying = true;
 			} catch (Throwable t) {
 				Log.e(LOG, "Error starting stream: " + t);
@@ -277,21 +251,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		return audioSessionId;
 	}
 
-	@Kroll.method
-	public int getDeclaredBitRate() {
-		return aacPlayer.getDeclaredBitRate();
-	}
-
-	@Kroll.method
-	public void setDecodeBufferCapacityMs(int rate) {
-		aacPlayer.setDecodeBufferCapacityMs(rate);
-	}
-
-	@Kroll.method
-	public void setAudioBufferCapacityMs(int rate) {
-		aacPlayer.setAudioBufferCapacityMs(rate);
-	}
-
 	@Override
 	public void onPause(Activity activity) {
 		super.onPause(activity);
@@ -309,4 +268,5 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			aacPlayer.stop();
 		}
 	}
+
 }

@@ -21,11 +21,13 @@ Alternativly you can work with more arguments as an object:
 
 ```javascript
 streamer.play({
-    url:'http://209.85.88.199:8080',
-    charset:'UTF-8',
-    expectedKBitSecRate:128
+    url : 'http://209.85.88.199:8080',
+    charset : 'UTF-8',
+    expectedKBitSecRate : 128,
+    decodeBufferCapacityMs : 700,
+    audioBufferCapacityMs :1500
 }); 
-
+setTimeout(streamer.stop,60000);
 ```
 
 
