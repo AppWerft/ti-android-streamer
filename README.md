@@ -21,11 +21,11 @@ Alternativly you can work with more arguments as an object:
 
 ```javascript
 streamer.play({
-    url : 'http://209.85.88.199:8080',
-    charset : 'UTF-8',
-    expectedKBitSecRate : 128,
-    decodeBufferCapacityMs : 700,
-    audioBufferCapacityMs :1500
+    url : 'http://209.85.88.199:8080', // mandatory
+    charset : 'UTF-8',  // default
+    expectedKBitSecRate : 128, // default
+    decodeBufferCapacityMs : 700, // default
+    audioBufferCapacityMs :1500 // default
 }); 
 ```
 
@@ -34,22 +34,15 @@ streamer.play({
 ```java
         streamer.addEventListener('change', function(e) {
             switch (e.status) {
-            case 0 
-                status = Streamer.STATE_STOPPED;
+                case : Streamer.STATE_STOPPED 
                 break;
-            case 1 :
-                status = Streamer.STATE_BUFFERING;
+                case 1 : Streamer.STATE_BUFFERING;
                 break;
-            case 2 :
-                status = Streamer.STATE_PLAYING;
+                case 2 : Streamer.STATE_PLAYING;
                 break;
-            case 3 :
-                status = Streamer.STATE_STREAMERROR;
+                case 3 : Streamer.STATE_STREAMERROR;
                 break;
             }
-
-            // Output the status to the console log
-            Ti.API.log(status);
         });
 ```
 ## Get stream metadata
