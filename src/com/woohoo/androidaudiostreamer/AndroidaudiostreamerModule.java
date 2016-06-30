@@ -1,5 +1,7 @@
 package com.woohoo.androidaudiostreamer;
 
+import java.util.HashMap;
+
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
@@ -29,6 +31,17 @@ public class AndroidaudiostreamerModule extends KrollModule {
 	boolean playerStarted;
 	static boolean isCurrentlyPlaying = false;
 	static boolean classInit = true;
+	@Kroll.constant
+	public static final int STATE_STOPPED = 0;
+	@Kroll.constant
+	public static final int STATE_STARTED = 1;
+	@Kroll.constant
+	public static final int STATE_PLAYING = 2;
+	@Kroll.constant
+	public static final int STATE_STREAMERROR = 3;
+
+	public static final String LCAT = "AAC";
+
 	PlayerCallback clb = new PlayerCallback() {
 		public void playerStarted() {
 			status = 1;
@@ -42,9 +55,9 @@ public class AndroidaudiostreamerModule extends KrollModule {
 
 		public void playerPCMFeedBuffer(boolean isPlaying, int bufSizeMs,
 				int bufCapacityMs) {
-			status = 1;
+			status = STATE_STARTED;
 			if (isPlaying) {
-				status = 2;
+				status = STATE_PLAYING;
 			}
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
@@ -55,7 +68,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 
 		public void playerStopped(int perf) {
 			playerStarted = false;
-			status = 0;
+			status = STATE_STOPPED;
 			if (hasListeners("change")) {
 				KrollDict statusProps = new KrollDict();
 				statusProps.put("status", status);
@@ -64,7 +77,7 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		}
 
 		public void playerException(Throwable t) {
-			status = 3;
+			status = STATE_STREAMERROR;
 			if (playerStarted) {
 				playerStopped(0);
 			}
@@ -150,18 +163,57 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Kroll.method
-	public void play(String url, @Kroll.argument(optional = true) String charset) {
+	public void play(Object args) {
+		String url = null, charset = "UTF-8";
+		int expectedKBitSecRate = 0; // auto
+		if (args != null) {
+			if (args instanceof HashMap) {
+				Log.d(LCAT, "args are Dict/HashMap");
+				KrollDict dict = null;
+				try {
+					dict = new KrollDict((HashMap<String, Object>) args);
+				} catch (Exception e) {
+					Log.e(LCAT, "Unable to parse args" + args.toString());
+					return;
+				}
+				if (dict.containsKeyAndNotNull("url")) {
+					url = dict.getString("url");
+				}
+				if (dict.containsKeyAndNotNull("charset")) {
+					charset = dict.getString("charset");
+				}
+				if (dict.containsKeyAndNotNull("expectedKBitSecRate")) {
+					expectedKBitSecRate = dict.getInt("expectedKBitSecRate");
+				}
+			} else if (args instanceof String) {
+				Log.d(LCAT, "args is String");
+				url = (String) args;
+			} else {
+				Log.d(LCAT, "args either dict or string");
+			}
+		}
 		if (!isCurrentlyPlaying) {
 			try {
 				if (aacPlayer == null) {
+					Log.d(LCAT, "aacPlayer was null, we create a new one");
 					aacPlayer = new MultiPlayer(clb);
 				}
 				currentUrl = url;
+				Log.d(LCAT, "currentUrl=" + currentUrl);
 				currentCharset = charset;
-				aacPlayer.playAsync(url);
-				if (charset != null)
+				Log.d(LCAT, "currentCharset=" + currentCharset);
+				if (expectedKBitSecRate == 0) {
+					Log.d(LCAT, "playAsync(auto)");
+					aacPlayer.playAsync(url);
+				} else {
+					Log.d(LCAT, "playAsync(" + expectedKBitSecRate + ")");
+					aacPlayer.playAsync(url, expectedKBitSecRate);
+				}
+				if (charset != null) {
 					aacPlayer.setMetadataCharEnc(charset);
+				}
 				isCurrentlyPlaying = true;
 			} catch (Throwable t) {
 				Log.e(LOG, "Error starting stream: " + t);
