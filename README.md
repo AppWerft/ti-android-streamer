@@ -1,7 +1,7 @@
-# ti-android-streamer
+# Ti.AndroidStreamer
 Android Media Streamer Module for Titanium. 
 
-This module can be built and used in a project to support MP3, AAC and AAC+ local and remote audio streams. It has been developed to mainly to provide AAC support for the Titanium SDK what is only currently support on iOS.
+This module can be built and used in a project to support MP3, AAC and AAC+ local and remote audio streams. It has been developed to mainly to provide AAC support for the Titanium SDK what is only currently support on Android.
 
 Below is an outline of the main methods used in the module. A more comprehensive example can be found in <a href="https://github.com/trevorf/ti-android-streamer/blob/master/example/app.js">example/app.js</a>
 
@@ -10,7 +10,7 @@ Firstly, require the module into the controller
 
 	var streamer = require('com.woohoo.androidaudiostreamer');
 
-# Play a stream
+## Play a stream
 In this example we are using a shoutcast AAC stream.
 
 ```javascript
@@ -32,7 +32,7 @@ setTimeout(streamer.stop,60000);
 
 
 ## Listen to a change in the stream status	
-
+```java
         streamer.addEventListener('change', function(e) {
             switch (e.status) {
             case 0 
@@ -52,8 +52,8 @@ setTimeout(streamer.stop,60000);
             // Output the status to the console log
             Ti.API.log(status);
         });
-
-# Get stream metadata
+```
+## Get stream metadata
 
         streamer.addEventListener('metadata', function(e) {
             Ti.API.log(e.title);
@@ -61,18 +61,19 @@ setTimeout(streamer.stop,60000);
             Ti.API.log(e.genre);
         }); 
 
-# Get audioSessionId (for Visualizer)
+## Get audioSessionId (for Visualizer)
 
+```java
 streamer.addEventListener('ready', function(e) {
     Ti.API.log(e.audioSessionId);
 }); 
+```
 
-
-# Stop a stream currently playing
+## Stop a stream currently playing
 
 	streamer.stop();
 
-# Stream volume control
+## Stream volume control
 
 Create some variables for the volume
 currentVolume - get the volume level that the device is currently set at
@@ -89,8 +90,9 @@ Then set the volume
 The volume() method take a Number parameter from 0 to 10, where 10 is the maximum volume level
 
 
-# Retrieve more stream metadata
+## Retrieve more stream metadata
 
 - getMetaTitle() retrieves the current song or the stream title/description if this is not available
 - getMetaGenre() retrieves the stream genre 
 - getMetaUrl() retrieves the URL of the stream
+    
