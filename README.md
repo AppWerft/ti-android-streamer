@@ -1,5 +1,5 @@
 # ti-android-streamer
-Android Media Streamer Module for Titantium. 
+Android Media Streamer Module for Titanium. 
 
 This module can be built and used in a project to support MP3, AAC and AAC+ local and remote audio streams. It has been developed to mainly to provide AAC support for the Titanium SDK what is only currently support on iOS.
 
@@ -13,9 +13,23 @@ Firstly, require the module into the controller
 # Play a stream
 In this example we are using a shoutcast AAC stream.
 
-	streamer.play('http://209.85.88.199:8080','UTF-8'); // this is an AAC stream http://198.144.148.12:9002/
-	
-# Listen to a change in the stream status	
+```javascript
+streamer.play('http://209.85.88.199:8080'); // this is an AAC stream http://198.144.148.12:9002/
+```
+
+Alternativly you can work with more arguments as an object:
+
+```javascript
+streamer.play({
+    url:'http://209.85.88.199:8080',
+    charset:'UTF-8',
+    expectedKBitSecRate:128
+}); 
+
+```
+
+
+## Listen to a change in the stream status	
 
         streamer.addEventListener('change', function(e) {
             switch (e.status) {
