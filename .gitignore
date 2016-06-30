@@ -1,5 +1,10 @@
 assets
-build
-dist
+build/*
 documentation
 dist
+start.sh
+libs
+lib
+build
+.gitignoreassets
+build

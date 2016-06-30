@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.7.7
+version: 1.7.8
 apiversion: 2
 description: MP3, AAC & AAC+ Audio Streamer for Android. And sessionId for visualizer2
 author: Trevor Fifield
@@ -15,4 +15,4 @@ name: androidaudiostreamer
 moduleid: com.woohoo.androidaudiostreamer
 guid: 1f81e1bf-afd5-4075-a219-d2c51accde23
 platform: android
-minsdk: 5.1.0.GA
+minsdk: 4.0.0.GA

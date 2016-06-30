@@ -109,6 +109,21 @@ Handle<FunctionTemplate> AndroidaudiostreamerModule::getProxyTemplate()
 		titanium::Proxy::setIndexedProperty);
 
 	// Constants --------------------------------------------------------------
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		LOGE(TAG, "Failed to get environment in AndroidaudiostreamerModule");
+		//return;
+	}
+
+
+		DEFINE_INT_CONSTANT(prototypeTemplate, "STATE_PLAYING", 2);
+
+		DEFINE_INT_CONSTANT(prototypeTemplate, "STATE_STOPPED", 0);
+
+		DEFINE_INT_CONSTANT(prototypeTemplate, "STATE_STARTED", 1);
+
+		DEFINE_INT_CONSTANT(prototypeTemplate, "STATE_STREAMERROR", 3);
+
 
 	// Dynamic properties -----------------------------------------------------
 
@@ -129,9 +144,9 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "play", "(Ljava/lang/String;Ljava/lang/String;)V");
+		methodID = env->GetMethodID(AndroidaudiostreamerModule::javaClass, "play", "(Ljava/lang/Object;)V");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'play' with signature '(Ljava/lang/String;Ljava/lang/String;)V'";
+			const char *error = "Couldn't find proxy method 'play' with signature '(Ljava/lang/Object;)V'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
@@ -145,34 +160,19 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
 	}
 
-	jvalue jArguments[2];
+	jvalue jArguments[1];
 
 
 
 
-	
+	bool isNew_0;
 	
 	if (!args[0]->IsNull()) {
 		Local<Value> arg_0 = args[0];
 		jArguments[0].l =
-			titanium::TypeConverter::jsValueToJavaString(env, arg_0);
+			titanium::TypeConverter::jsValueToJavaObject(env, arg_0, &isNew_0);
 	} else {
 		jArguments[0].l = NULL;
-	}
-
-	
-	if (args.Length() <= 1) {
-		jArguments[1].l = NULL;
-
-	} else {
-	
-	if (!args[1]->IsNull()) {
-		Local<Value> arg_1 = args[1];
-		jArguments[1].l =
-			titanium::TypeConverter::jsValueToJavaString(env, arg_1);
-	} else {
-		jArguments[1].l = NULL;
-	}
 	}
 
 	jobject javaProxy = proxy->getJavaObject();
@@ -184,10 +184,9 @@ Handle<Value> AndroidaudiostreamerModule::play(const Arguments& args)
 
 
 
+			if (isNew_0) {
 				env->DeleteLocalRef(jArguments[0].l);
-
-
-				env->DeleteLocalRef(jArguments[1].l);
+			}
 
 
 	if (env->ExceptionCheck()) {
