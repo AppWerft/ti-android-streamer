@@ -10,8 +10,6 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.util.Log;
-import android.telephony.TelephonyManager;
-import android.telephony.PhoneStateListener;
 
 import com.spoledge.aacdecoder.MultiPlayer;
 import com.spoledge.aacdecoder.PlayerCallback;
@@ -142,31 +140,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 					"Cannot set the ICY URLStreamHandler - maybe already set ? - "
 							+ t);
 		}
-
-		PhoneStateListener phoneStateListener = new PhoneStateListener() {
-			@Override
-			public void onCallStateChanged(int state, String incomingNumber) {
-				if (state == TelephonyManager.CALL_STATE_RINGING) {
-					if (isCurrentlyPlaying) {
-						aacPlayer.stop();
-					}
-				} else if (state == TelephonyManager.CALL_STATE_IDLE) {
-					if (isCurrentlyPlaying && currentUrl != null) {
-						aacPlayer.playAsync(currentUrl);
-					}
-				} else if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
-					// A call is dialing, active or on hold
-				}
-				super.onCallStateChanged(state, incomingNumber);
-			}
-		};
-
-		TelephonyManager mgr = (TelephonyManager) TiApplication.getInstance()
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		if (mgr != null) {
-			mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
-		}
-
 	}
 
 	@Kroll.method
@@ -265,5 +238,4 @@ public class AndroidaudiostreamerModule extends KrollModule {
 			aacPlayer.stop();
 		}
 	}
-
 }
