@@ -138,9 +138,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 					.setURLStreamHandlerFactory(new java.net.URLStreamHandlerFactory() {
 						public java.net.URLStreamHandler createURLStreamHandler(
 								String protocol) {
-							Log.d(LOG,
-									"Asking for stream handler for protocol: '"
-											+ protocol + "'");
 							if ("icy".equals(protocol))
 								return new com.spoledge.aacdecoder.IcyURLStreamHandler();
 							return null;
@@ -170,7 +167,6 @@ public class AndroidaudiostreamerModule extends KrollModule {
 		int expectedKBitSecRate = 0; // auto
 		if (args != null) {
 			if (args instanceof HashMap) {
-				Log.d(LCAT, "args are Dict/HashMap");
 				KrollDict dict = null;
 				try {
 					dict = new KrollDict((HashMap<String, Object>) args);
@@ -195,10 +191,9 @@ public class AndroidaudiostreamerModule extends KrollModule {
 				}
 
 			} else if (args instanceof String) {
-				Log.d(LCAT, "args is String");
 				url = (String) args;
 			} else {
-				Log.d(LCAT, "args either dict or string");
+				Log.e(LCAT, "args either dict or string");
 			}
 		}
 		if (!isCurrentlyPlaying) {
