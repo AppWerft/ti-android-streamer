@@ -2,17 +2,17 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.8.0
-apiversion: 2
+version: 2.0.0
+apiversion: 4
+architectures: arm64-v8a armeabi-v7a x86
 description: MP3, AAC & AAC+ Audio Streamer for Android. And sessionId for visualizer2
 author: Trevor Fifield
 license: Use permitted through purchase or permission given.
 copyright: (c) 2012-2014 Trevelyn Ltd (Woohoo Studios)
 
-architectures=armeabi;armeabi-v7a;x86;mips
 # these should not be edited
 name: androidaudiostreamer
 moduleid: com.woohoo.androidaudiostreamer
 guid: 1f81e1bf-afd5-4075-a219-d2c51accde23
 platform: android
-minsdk: 4.0.0.GA
+minsdk: 7.1.0
